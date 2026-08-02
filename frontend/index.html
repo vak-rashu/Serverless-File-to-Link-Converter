@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File to Link Converter | Serverless Shortener</title>
+  <meta name="description" content="Convert your files into temporary shareable links instantly. Powered by Serverless AWS Lambda and S3.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-glow"></div>
+  
+  <div class="container">
+    <header class="app-header">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+      </div>
+      <h1>File to Link Converter</h1>
+      <p class="subtitle">Upload any file to generate a temporary download link (valid for 5 minutes)</p>
+    </header>
+
+    <main class="main-card">
+      <!-- Config Section -->
+      <div class="config-section">
+        <label for="api-endpoint" class="input-label">
+          <span>API Endpoint URL</span>
+          <span class="badge">AWS API Gateway</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            type="url" 
+            id="api-endpoint" 
+            placeholder="https://xyz123.execute-api.us-east-1.amazonaws.com/project/shorten" 
+            required 
+          />
+          <button type="button" id="save-endpoint-btn" class="btn-secondary" title="Save to local storage">Save</button>
+        </div>
+      </div>
+
+      <!-- Upload Form -->
+      <form id="upload-form" class="upload-form">
+        <!-- Drag and Drop Zone -->
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="file-input" class="file-input" required />
+          <div class="drop-zone-content" id="drop-zone-content">
+            <div class="cloud-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                <path d="M12 12v9"></path>
+                <path d="m16 16-4-4-4 4"></path>
+              </svg>
+            </div>
+            <p class="drop-text">Drag & drop your file here, or <span class="browse-link">browse</span></p>
+            <span class="file-hint">Supports PDF, JPG, PNG, XLSX, TXT and any file (up to API Gateway payload limit)</span>
+          </div>
+
+          <!-- File Details Preview -->
+          <div class="file-preview hidden" id="file-preview">
+            <div class="file-info">
+              <div class="file-type-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <div class="file-details">
+                <span class="filename" id="preview-filename">filename.ext</span>
+                <span class="filesize" id="preview-filesize">0 KB</span>
+              </div>
+            </div>
+            <button type="button" id="remove-file-btn" class="icon-button" title="Remove file">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Optional Filename override -->
+        <div class="form-group">
+          <label for="custom-filename" class="input-label">
+            Custom Filename <span class="optional-tag">(Optional)</span>
+          </label>
+          <input 
+            type="text" 
+            id="custom-filename" 
+            placeholder="e.g. quarterly_report.pdf" 
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submit-btn" class="btn-primary" disabled>
+          <span class="btn-text">Generate Short Link</span>
+          <div class="spinner hidden" id="spinner"></div>
+        </button>
+      </form>
+
+      <!-- Status Alert -->
+      <div id="status-message" class="status-message hidden"></div>
+
+      <!-- Result Card -->
+      <div id="result-card" class="result-card hidden">
+        <div class="result-header">
+          <h3>Your Shortened Link</h3>
+          <span class="timer-badge" id="timer-badge">⏱️ Expires in 05:00</span>
+        </div>
+        <p class="result-description">This link redirects to your file stored securely on AWS S3.</p>
+
+        <div class="result-link-group">
+          <input type="text" id="generated-url" readonly />
+          <button type="button" id="copy-btn" class="btn-action btn-copy">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copy-btn-text">Copy Link</span>
+          </button>
+          <a id="open-link-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn-action btn-open" title="Open link in new tab">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>Serverless Architecture: AWS Lambda &bull; Amazon S3 &bull; DynamoDB &bull; API Gateway</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

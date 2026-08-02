@@ -13,6 +13,23 @@ It is used to store the actual files of the users, only of which Pre Signed URL'
 ### DynamoDB: 
 It stores a key mapping of shortKey with the original URL with a TTL of 5 mins. So one has only 5 mins to download the file.
 
+---
+
+## 🎨 Static Frontend (S3 Ready)
+
+A minimal, zero-dependency static frontend built with Vanilla HTML5, CSS3, and JavaScript is available in the [`frontend/`](frontend/) directory.
+
+### Features:
+- 📁 Drag-and-drop file upload interface
+- 🔑 Persistent API Gateway endpoint configuration (saved to `localStorage`)
+- ⏱️ Live 5-minute countdown expiration badge
+- 📋 One-click URL copying to clipboard
+- ☁️ 100% S3 static website hosting compatible (no build step needed)
+
+See [`frontend/README.md`](frontend/README.md) for step-by-step S3 deployment instructions.
+
+---
+
 ![a user made a request to POST](https://github.com/user-attachments/assets/bd78aa2c-ee5e-4c80-87d6-455c2ba7576a)
 - When a user wants to convert a file into link, he/she will go to POST /shorten and the lambda will put that object into the S3, with the key name being the filename given by the user.
 Then a shortKey and Pre Signed URL of that object will be created, with a TimeToLive attribute of 5 mins only. So the user gets total 5 mins of time to use the URL to share or copy paste it into the browser to download the file. All this data will be stored in DynamoDB to create a mapping between the three keys.

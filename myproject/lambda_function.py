@@ -59,16 +59,38 @@ def get_url_from_dynamodb(short_key):
 def lambda_handler(event, context):
     method = event.get("httpMethod")
 
+    cors_headers = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS"
+    }
+
+    if method == "OPTIONS":
+        return {
+            "statusCode": 200,
+            "headers": cors_headers,
+            "body": json.dumps({"msg": "CORS preflight OK"})
+        }
+
     if method == "POST":
         try:
             # Decode base64-encoded body (multipart/form-data comes in like this)
-            content_type = event["headers"].get("Content-Type") or event["headers"].get("content-type")
-            body = base64.b64decode(event["body"])
+            headers = event.get("headers") or {}
+            content_type = headers.get("Content-Type") or headers.get("content-type") or ""
+
+            body_raw = event.get("body", "")
+            if event.get("isBase64Encoded", False):
+                body = base64.b64decode(body_raw)
+            elif isinstance(body_raw, str):
+                body = body_raw.encode("utf-8")
+            else:
+                body = body_raw
 
             # Use cgi to parse multipart data
             environ = {'REQUEST_METHOD': 'POST'}
-            headers = {'content-type': content_type}
-            fs = cgi.FieldStorage(fp=io.BytesIO(body), environ=environ, headers=headers)
+            env_headers = {'content-type': content_type}
+            fs = cgi.FieldStorage(fp=io.BytesIO(body), environ=environ, headers=env_headers)
 
             # Get the file
             file_field = fs['file']
@@ -82,7 +104,7 @@ def lambda_handler(event, context):
             binary_extensions = ['.pdf', '.jpg', '.jpeg', '.png', '.xlsx']
             is_binary = any(filename.endswith(ext) for ext in binary_extensions)
 
-            content = file_bytes if is_binary else file_bytes.decode("utf-8")
+            content = file_bytes if is_binary else file_bytes.decode("utf-8", errors="ignore")
 
             upload_file_to_s3(content, filename)
             presigned_url = create_presigned_url(filename)
@@ -93,14 +115,14 @@ def lambda_handler(event, context):
 
             return {
                 "statusCode": 200,
-                "headers": {"Content-Type": "application/json"},
+                "headers": cors_headers,
                 "body": json.dumps({"msg": short_url})
             }
 
         except Exception as e:
             return {
                 "statusCode": 500,
-                "headers": {"Content-Type": "application/json"},
+                "headers": cors_headers,
                 "body": json.dumps({"msg": "Error: " + str(e)})
             }
 
@@ -111,19 +133,23 @@ def lambda_handler(event, context):
 
             return {
                 "statusCode": 301,
-                "headers": {'Location': original_url},
+                "headers": {
+                    'Location': original_url,
+                    "Access-Control-Allow-Origin": "*"
+                },
             }
 
         except Exception as e:
             return {
                 "statusCode": 500,
-                "headers": {"Content-Type": "application/json"},
+                "headers": cors_headers,
                 "body": json.dumps({"msg": "Error: " + str(e)})
             }
 
     else:
         return {
             "statusCode": 405,
-            "headers": {"Content-Type": "application/json"},
+            "headers": cors_headers,
             "body": json.dumps({"msg": "Method not allowed"})
         }
+
