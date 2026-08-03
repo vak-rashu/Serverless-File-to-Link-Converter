@@ -1,20 +1,30 @@
 module "s3bucket" {
   source = "./s3"
-  bucket_name = "enter-value-here"
+  bucket_name = "newBucket123"
 }
 
 module "dynamodb" {
   source = "./dynamo-db"
-  dynamodb_table_name = "enter-here"
+  dynamodb_table_name = "newDB123"
 }
 
 module "lambda_func" {
   source = "./lambda"
-  source_dir = ""
-  output_path = ""
+  source_dir = "../myproject/"
+  output_path = "../myproject/function.zip"
   runtime_type = "python3.12"
-  function_name = "enter-function-name"
+  function_name = "my-function123"
 
   bucket_name = module.s3bucket.bucket_name
   dynamo_table_name = module.dynamodb.dynamo_table_name
+  s3_bucket_arn = module.s3bucket.bucket_arn
+  db_table_arn = module.dynamodb.db_table_arn
+
+  rest_api_id = module.api_gw.rest_api_id
+}
+
+module "api_gw" {
+  source = "./api-gw"
+  lambda_func_arn = module.lambda_func.lambda_func_invoke_arn
+  lambda_func_name = module.lambda_func.lambda_func_name
 }

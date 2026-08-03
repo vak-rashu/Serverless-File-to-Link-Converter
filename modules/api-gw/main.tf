@@ -40,7 +40,7 @@ resource "aws_api_gateway_integration" "integration_shorten" {
   http_method = aws_api_gateway_method.shorten_method.http_method
   type = "AWS_PROXY"
   integration_http_method = "POST"
-  uri = aws_lambda_function.lambda_func.invoke_arn
+  uri = var.lambda_func_arn
 
   request_parameters = {
     "integration.request.header.Content-Type" = "method.request.header.Content-Type"
@@ -55,7 +55,7 @@ resource "aws_api_gateway_integration" "integration_shorten_options" {
   http_method             = aws_api_gateway_method.shorten_options.http_method
   type                    = "AWS_PROXY"
   integration_http_method = "POST"
-  uri                     = aws_lambda_function.lambda_func.invoke_arn
+  uri                     = var.lambda_func_arn
 }
 
 resource "aws_api_gateway_resource" "short" {
@@ -79,7 +79,7 @@ resource "aws_api_gateway_integration" "integration_short" {
   http_method = aws_api_gateway_method.method.http_method
   type = "AWS_PROXY"
   integration_http_method = "POST"
-  uri = aws_lambda_function.lambda_func.invoke_arn
+  uri = var.lambda_func_arn
 }
 
 #make a deployment
@@ -103,7 +103,7 @@ resource "aws_api_gateway_stage" "stage" {
 resource "aws_lambda_permission" "api_gw" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda_func.function_name
+  function_name = var.lambda_func_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.rest_api.execution_arn}/*/*"
 }
