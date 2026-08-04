@@ -1,0 +1,33 @@
+# # terraform deploy pipeline
+# on:
+#     push:
+#         paths:
+#             -   'modules/*'
+#     pull_request:
+#         paths:
+#             -   'modules/*'
+
+# jobs:
+#     validation:
+#         runs-on: ubuntu-latest
+
+#         steps:
+#             -   name:   Checkout Code
+#                 uses:   actions/checkout@v4
+
+#             -   name:   Setup Terraform CLI
+#                 uses:   hashicorp/setup-terraform@v4
+
+#             -   name:   Validate Terraform Code
+#                 run:    terraform validate
+                
+#             -   name:   Setup Tflint
+#                 uses:   terraform-linters/setup-tflint@v6
+            
+#             -   name:   Run Tflint
+#                 run:    tflint -f compact
+            
+#             -   name:   Run Terraform Tests
+#                 run:    terraform tests
+
+# # provide an environment whether to push the code or not

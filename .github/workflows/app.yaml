@@ -1,1 +1,23 @@
-# frontend code deploy pipeline
+# # frontend code deploy pipeline
+# name: HTML CI pipeline
+
+# on:
+#   push:
+#     branches:
+#       - "main"
+  
+#   pull_request:
+#     branches:
+#       - "main"
+  
+
+# jobs:
+#   HTML-pipeline:
+#     runs-on:  ubuntu-latest
+
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+      
+#       - name: Push File to S3
+#         run: aws s3 cp ../frontend/ s3://<bucket_name>/
