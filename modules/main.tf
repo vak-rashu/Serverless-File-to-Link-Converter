@@ -16,9 +16,9 @@ module "lambda_func" {
   runtime_type = "python3.12"
   function_name = "my-function123"
 
-  bucket_name = module.s3bucket.bucket_name
+  bucket_name = module.s3bucket.file_upload_bucket_name
   dynamo_table_name = module.dynamodb.dynamo_table_name
-  s3_bucket_arn = module.s3bucket.bucket_arn
+  s3_bucket_arn = module.s3bucket.file_upload_bucket_arn
   db_table_arn = module.dynamodb.db_table_arn
 
   rest_api_id = module.api_gw.rest_api_id
