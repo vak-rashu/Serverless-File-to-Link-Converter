@@ -1,4 +1,9 @@
-variable "bucket_name" {
+variable "file_upload_bucket_name" {
     type = string
-    description = "Add Bucket Name"
+    description = "User Files Upload Bucket"
+}
+
+variable "frontend_bucket_name" {
+  type = string
+  description = "Frontend assests bucket"
 }
