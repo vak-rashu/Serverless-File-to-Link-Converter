@@ -1,8 +1,8 @@
 # # terraform deploy pipeline
 # on:
-#     # push:
-#     #     paths:
-#     #         -   'modules/*'
+#     push:
+#         paths:
+#             -   'modules/*'
 #     pull_request:
 #         paths:
 #             -   'modules/*'
