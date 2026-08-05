@@ -1,16 +1,22 @@
 # # terraform deploy pipeline
 # on:
-#     push:
-#         paths:
-#             -   'modules/*'
+#     # push:
+#     #     paths:
+#     #         -   'modules/*'
 #     pull_request:
 #         paths:
 #             -   'modules/*'
 
+# permissions:
+#   id-token: write
+#   contents: read
+
 # jobs:
 #     validation:
 #         runs-on: ubuntu-latest
-
+#         defaults:
+#           run:
+#             working-directory:  ./modules
 #         steps:
 #             -   name:   Checkout Code
 #                 uses:   actions/checkout@v4
@@ -19,15 +25,39 @@
 #                 uses:   hashicorp/setup-terraform@v4
 
 #             -   name:   Validate Terraform Code
-#                 run:    terraform validate
-                
+#                 run:    |
+#                         terraform init
+#                         terraform validate
+
 #             -   name:   Setup Tflint
 #                 uses:   terraform-linters/setup-tflint@v6
-            
+#                 with:
+#                   cache:  true
+
 #             -   name:   Run Tflint
-#                 run:    tflint -f compact
-            
+#                 run:    |
+#                         tflint --init
+#                         tflint
+
 #             -   name:   Run Terraform Tests
 #                 run:    terraform tests
 
 # # provide an environment whether to push the code or not
+#     configure-aws:
+#         runs-on: ubuntu-latest
+#         env:
+#           AWS_REGION: "ap-south-1"
+
+#         steps:
+
+#           -   name:   Configure AWS Credentials
+#               uses:   aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+#               with:   
+#                 role-to-assume: arn:aws:iam::495599765058:role/terraform-cicd-pipeline-automation-access
+#                 aws-region: $AWS_REGION
+
+#           -   name:   Terraform Plan
+#               run:    terraform plan
+
+#           -   name:   Terraform Apply
+#               run:    terraform apply
