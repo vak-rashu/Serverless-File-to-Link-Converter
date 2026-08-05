@@ -1,63 +1,102 @@
-# # terraform deploy pipeline
-# on:
-#     push:
-#         paths:
-#             -   'modules/*'
-#     pull_request:
-#         paths:
-#             -   'modules/*'
+# terraform deploy pipeline
+on:
+    push:
+        paths:
+            -   'modules'
+    pull_request:
+        branches:
+          - main
+        paths:
+            -   'modules'
 
-# permissions:
-#   id-token: write
-#   contents: read
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
 
-# jobs:
-#     validation:
-#         runs-on: ubuntu-latest
-#         defaults:
-#           run:
-#             working-directory:  ./modules
-#         steps:
-#             -   name:   Checkout Code
-#                 uses:   actions/checkout@v4
+jobs:
+    validation:
+        runs-on: ubuntu-latest
+        defaults:
+          run:
+            working-directory:  ./modules
+        steps:
+            -   name:   Checkout Code
+                uses:   actions/checkout@v4
 
-#             -   name:   Setup Terraform CLI
-#                 uses:   hashicorp/setup-terraform@v4
+            -   name:   Setup Terraform CLI
+                uses:   hashicorp/setup-terraform@v4
 
-#             -   name:   Validate Terraform Code
-#                 run:    |
-#                         terraform init
-#                         terraform validate
+            -   name:   Run Terraform Init
+                run:    terrform init -backend=false
 
-#             -   name:   Setup Tflint
-#                 uses:   terraform-linters/setup-tflint@v6
-#                 with:
-#                   cache:  true
+            -   name:   Validate Terraform Code
+                run:    terraform validate
 
-#             -   name:   Run Tflint
-#                 run:    |
-#                         tflint --init
-#                         tflint
+            -   name:   Setup Tflint
+                uses:   terraform-linters/setup-tflint@v6
+                with:
+                  cache:  true
 
-#             -   name:   Run Terraform Tests
-#                 run:    terraform tests
+            -   name:   Run Tflint
+                run:    |
+                        tflint --init
+                        tflint
 
-# # provide an environment whether to push the code or not
-#     configure-aws:
-#         runs-on: ubuntu-latest
-#         env:
-#           AWS_REGION: "ap-south-1"
+            -   name:   Run Terraform Tests
+                run:    terraform test
+    
+    plan:
+        runs-on:    ubuntu-latest
+        needs:  validation
 
-#         steps:
+        steps:
+            -   name:   Checkout code
+                uses:   action/checkout@v4
 
-#           -   name:   Configure AWS Credentials
-#               uses:   aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
-#               with:   
-#                 role-to-assume: arn:aws:iam::495599765058:role/terraform-cicd-pipeline-automation-access
-#                 aws-region: $AWS_REGION
+            -   name:   Checkout Terraform Code
+                uses:   hashicorp/setup-terraform@v4
+            
+            -   name:   Init Terraform
+                run:    terraform init
 
-#           -   name:   Terraform Plan
-#               run:    terraform plan
+            -   name:   Run Terraform Plan
+                run:    terraform plan -out=tfplan -input=false
+            
+            -   name:   Upload Plan Artifact
+                uses:   actions/upload-artifact@v4
+                with:
+                    name:   tfplan
+                    path:   ${{ env.TF_WORKING_DIR }}/tfplan
+                    retention-days: 1
 
-#           -   name:   Terraform Apply
-#               run:    terraform apply
+    apply_changes:
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+        env:
+          AWS_REGION: "ap-south-1"
+        needs: validation
+        environment: apply-changes
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name:   Configure AWS Credentials
+              uses:   aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+              with:   
+                role-to-assume: arn:aws:iam::495599765058:role/terraform-cicd-pipeline-automation-access
+                aws-region: ${{ env.AWS_REGION }}
+
+            -   name:   Init Terraform
+                run: terraform init
+
+            -   name:   Download Plan Artifact
+                uses:   actions/download-artifact@v4
+                with:
+                    name:   tfplan
+                    path:   'modules'
+
+            -   name:   Terraform Apply
+                run:    terraform apply -input=false tfplan

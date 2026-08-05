@@ -1,2 +1,6 @@
 /modules/.terraform
 /modules/.*
+/modules/lambda/tests
+/modules/lambda/.*
+/myprojectinfra
+/modules/lambda/tests/
