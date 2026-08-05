@@ -1,0 +1,10 @@
+terraform {
+  required_version = "1.15.8"
+}
+
+# provider "aws" {
+#     # access_key = "ASIAXGZAMIZBCN7JNAMF"
+#     # secret_key = "FnLAVoqGKyklSRO2UMtwl6+ieKQxY5OhOjIwloor"
+#     # token = "IQoJb3JpZ2luX2VjEFoaCmFwLXNvdXRoLTEiRzBFAiEAldaSyZQ1dhdpXJsqw6n7FLvyInGBE7FLrrChm6RsxGYCIEbvCTvComf/pMEjRq/seUHc/TrA8Czs6HvGAo0tpH0KKsUDCCMQABoMNDk1NTk5NzY1MDU4Igx26DEa5jVHEq4P6/EqogPrOcKDfDsOopzT14R6hM0zORN58jPdnXffrpe0eX4TpIgZOx4jMM+V+KO58fYZY0a/S15ehkrlu0tJoeHb1xkowYVlD5Pifdlkc4SgZ7GdMghn0XjIHAmFitLgsuYBli2ER2jfXhaxhT/M+gl3tJfc4ZqwgcCeRIC9Xm1xn4dmOz1k8Cu22W7s15I2BobE2aAF0nEsw6JYg5B841di90cK2GX6kA/XRH4adjQcJV9vJ3/rrI3LpbJj3DuDkek04d5kQVs64iPdcsq7doKi67+je8ZqLwqrBDkL8qydTb23fItLHXS3TGloas6rlsgYfsVfRzif+XSugcy12PDpnzXFOjlwDLoStffVdGNAYqGPcMBukyBDyIZoXCmR7GkW/6oQKRwPVDtiCx9Pq/WVbRDl+mg/Wf9YM1PTcO7mvPipn1DeU6PhhK3MOnGgXIbNxBQKOLeki3ASa7NYb+u7gogssvLiBt0MJKqRXrNIHHRq/XpvAOCbPOImf/LbQ0ASBYX+CHSYLavdg+KH0SV47KHn7vErxcpYcOCj9IZSoVm9HyJBMNGYzNMGOq0CTupRg9h0i8lX7CGU+2l6Hdgfn/pvmU2kCKCWM7QwXjprD+oqstJVthhg1TU/ZC4FS3YLiX3mv7Zi4d1wycRAq0yfJyiWsnGR1kuwrc1Denlkq1TTsbfIGe3bm1N7AOmsut73qmv7RNcyrE5rZEbIIZVCCOKWvyIannvM9rFFp/c2f62v/SUAXhFopBfCxrt1f6bBxnC6wBCv2LNJXTevIWIHrvgCkrYIJb6zAF7s3WNkhbbLWrxr8KghblrtDwoRY52vZRJ/P4gDqH3gL6LmcY8A6kJzjL8ix9WbGfvj4JDyWHqOJByBQQBzYgpNJkSULH9/+XVAdTJ/yjG1LIIQKMDejc6i7BZ3nGBIuTyNnucmyTPXgdoKiySUJg2U13T/GgMzJU3QfujgFd1SJA=="
+#     # region = "ap-south-1" 
+# }
