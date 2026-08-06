@@ -15,11 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "frontend/*"
+        working-directory: "frontend/**"
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Simple HTML Lint
-        uses: actions/lin@v4
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --verbose "*.html"

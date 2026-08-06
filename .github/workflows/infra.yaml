@@ -2,12 +2,12 @@
 on:
     push:
         paths:
-            -   'modules'
+            -   'modules/**'
     pull_request:
         branches:
           - main
         paths:
-            -   'modules'
+            -   'modules/**'
 
 permissions:
   id-token: write
@@ -49,6 +49,9 @@ jobs:
     plan:
         runs-on:    ubuntu-latest
         needs:  validation
+        defaults:
+          run:
+            working-directory: ./modules
 
         steps:
             -   name:   Checkout code
@@ -73,6 +76,9 @@ jobs:
     apply_changes:
         runs-on: ubuntu-latest
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        defaults:
+          run:
+            working-directory: ./modules
 
         env:
           AWS_REGION: "ap-south-1"

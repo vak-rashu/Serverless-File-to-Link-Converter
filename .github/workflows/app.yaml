@@ -17,6 +17,7 @@ jobs:
     runs-on:  ubuntu-latest
     env:
       AWS_REGION: "ap-south-1"
+    environment: apply-changes-html
 
     steps:
           -   name: Checkout Code
