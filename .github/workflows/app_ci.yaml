@@ -4,7 +4,7 @@ name: Frontend CI
 on:
   pull_request:
     paths:
-      - "frontend/*"
+      - "frontend/**"
 
 permissions:
   contents: read

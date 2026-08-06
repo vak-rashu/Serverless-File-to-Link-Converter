@@ -4,7 +4,7 @@ name: HTML CI pipeline
 on:
   push:
     paths:
-      - "frontend"
+      - "frontend/**"
     branches:
       - "main"
 
