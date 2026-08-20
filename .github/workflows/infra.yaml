@@ -33,7 +33,7 @@ jobs:
                 uses:   hashicorp/setup-terraform@v4
 
             -   name:   Run Terraform Init
-                run:    terrform init -backend=false
+                run:    terraform init -backend=false
 
             -   name:   Validate and Format Terraform Code
                 run:    |
