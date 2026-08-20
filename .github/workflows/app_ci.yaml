@@ -1,4 +1,4 @@
-# apply lints to the frontend/* folder 
+# apply lints to the ./frontend folder 
 name: Frontend CI
 
 on:
