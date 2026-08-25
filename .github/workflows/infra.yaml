@@ -1,19 +1,26 @@
 # terraform deploy pipeline
 on:
-    push:
-        branches:
-          - main
-        paths:
-            -   'modules/**'
     pull_request:
         branches:
           - main
         paths:
             -   'modules/**'
+    
+    push:
+        branches:
+          - 'main'
+        
+        paths:
+          - 'modules/**'
+
+concurrency:
+    group:  ${{ github.workflow }}-${{  github.ref  }}
+    cancel-in-progress: true
 
 permissions:
   id-token: write
   contents: read
+  pull-requests: write
 
 env:
   AWS_REGION: "ap-south-1"
@@ -78,18 +85,37 @@ jobs:
 
                 # add the plan as a comment
             -   name:   Run Terraform Plan
-                run:    terraform plan -out=tfplan -input=false
+                id: tf-plan
+                run:    terraform plan -no-color
 
-            # -   name: Add comment to Pull Request
-            #     uses: actions/github-script@v7
-            #     with:
-            #         script: |
-            #                 github.rest.issues.createComment({
-            #                 issue_number: context.issue.number,
-            #                 owner: context.repo.owner,
-            #                 repo: context.repo.repo,
-            #                 body: '${terraform plan -out=tfplan -input=false}'
-            #                 })
+            -   name:   Post plan in the comment
+                if: github.event_name == 'pull_request'
+                uses:   actions/github-script@v9
+
+                with:
+                    github-token:   ${{     secrets.GITHUB_TOKEN_COMMENT    }}
+                    script: |
+                        console.log("------Terraform Plan------")
+                        const planComment = `#### Terraform Plan
+                                <details><summary> Show Plan </summary>
+
+                                ```
+                                ${{ steps.tf-plan.outputs.stdout }}
+                                ```
+                                
+                                </details>
+                                
+                                *Pushed by: @${{    github.actor    }}, Action: \`${{   github.event_name   }}\`*``;
+
+                                github.rest.issues.createComment({
+                                    issue_number:   context.issue.number,
+                                    owner:  context.repo.owner,
+                                    repo:   context.repo.repo,
+                                    body:   output
+                                });
+
+            -   name:   Run Terraform Plan
+                run:    terraform plan -out=tfplan
 
             -   name:   Upload Plan Artifact
                 uses:   actions/upload-artifact@v4
@@ -105,7 +131,6 @@ jobs:
           run:
             working-directory: ${{  env.TF_WORKING_DIR  }}
 
-        needs: plan
         environment: apply-changes
 
         steps:
