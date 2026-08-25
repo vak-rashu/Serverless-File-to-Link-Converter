@@ -1,7 +1,7 @@
 module "s3bucket" {
   source                  = "./s3"
-  upload_file_bucket_name = "newBucket123"
-  frontend_assests_bucket_name    = "frontend_assets_bucket_name"
+  upload_file_bucket_name = "User_bucket"
+  frontend_assests_bucket_name    = "Frontend_app"
 }
 
 module "dynamodb" {
