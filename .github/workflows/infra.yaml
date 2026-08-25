@@ -1,4 +1,5 @@
-# terraform deploy pipeline
+name: Infra pipeline
+
 on:
     pull_request:
         branches:
