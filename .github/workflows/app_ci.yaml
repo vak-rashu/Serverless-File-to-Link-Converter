@@ -27,7 +27,6 @@ jobs:
       run:
         working-directory: ${{  env.FRONTEND_WORKDIR  }}
 
-
     # basic lint step
     steps:
       - name: Checkout Code
