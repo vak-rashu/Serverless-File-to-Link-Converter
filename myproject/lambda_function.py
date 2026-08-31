@@ -22,6 +22,7 @@ def generate_short_key(length=6):
 def sanitize_filename(name):
     return re.sub(r'[^a-zA-Z0-9._-]', '_', name)
 
+# its better to have pre-signed url here
 def upload_file_to_s3(file_content, key):
     s3_client.put_object(
         Bucket=BUCKET_NAME,
