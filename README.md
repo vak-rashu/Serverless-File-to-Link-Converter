@@ -40,6 +40,7 @@ Then a shortKey and Pre Signed URL of that object will be created, with a TimeTo
 - Now with this URL, the user would like to copy it and share it or paste it in some other browser to GET the download of the file.
 This is done by actually redirecting the location to the corresponding Pre Signed URL, and the download will start automatically.
 
+<!--
 Drawbacks:
 * One of the major drawback that I found with this project is that the setup is a monolith. As, the POST method is handling everything from creating the bucket to generating the shortkeys to getting the presigned urls and at last putting it all into the dynamodb.
 And that being said, a better architecture has to be build to make services loosely coupled to each other.
@@ -49,3 +50,25 @@ And that being said, a better architecture has to be build to make services loos
 * The S3 object still stays even after the deletion of its URL mapping in the DynamoDB.
 
 * And at last, a custom Domain Name, as this API Gateway can't alone be used in real life application.
+-->
+
+## CI/CD Pipelines
+
+Infrastructure and frontend changes are deployed through separate GitHub Actions pipelines, each scoped to the part of the repo it's responsible for via path filters.
+
+## Terraform Infrastructure Pipeline
+
+Provisions and updates the API Gateway, Lambda, S3, and DynamoDB resources defined under modules/.
+
+* Validation — terraform fmt -check, terraform validate, tflint, and terraform test run on every pull request and push touching modules/**.
+* Plan — on pull requests, terraform plan runs against the proposed changes and the resulting plan is saved as a build artifact, so exactly what was reviewed is what later gets applied — not a re-computed diff.
+* Apply — restricted to pushes on main, gated behind a GitHub Environment approval step, and consumes the saved plan artifact directly (terraform apply tfplan) rather than re-planning at apply time.
+* AWS access uses short-lived credentials via OIDC role assumption (aws-actions/configure-aws-credentials), not long-lived access keys.
+
+## Frontend CI/CD Pipeline
+
+Lints and deploys the static site in frontend/ to its S3-hosted bucket.
+
+* Lint — runs on every pull request and push touching frontend/**.
+* Deploy — runs only on pushes to main, and only after lint succeeds (needs: gate). Syncs frontend/ to the S3 bucket with aws s3 sync --delete, keeping the bucket in sync with the source directory.
+* No manual approval gate — static asset deploys are idempotent and low-risk, so this stage is fully automated end-to-end.
