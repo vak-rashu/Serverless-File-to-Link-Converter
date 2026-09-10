@@ -76,7 +76,7 @@ jobs:
             -   name:   Configure AWS Credentials
                 uses:   aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
                 with:   
-                    role-to-assume: arn:aws:iam::495599765058:role/terraform-cicd-pipeline-automation-access
+                    role-to-assume: arn:aws:iam::${{ secrets.AWS_ACC_ID }}:role/terraform-cicd-pipeline-automation-access
                     aws-region: ${{ env.AWS_REGION }}
 
             -   name:   Init Terraform
@@ -110,7 +110,7 @@ jobs:
                                     issue_number:   context.issue.number,
                                     owner:  context.repo.owner,
                                     repo:   context.repo.repo,
-                                    body:   output
+                                    body:   planComment
                                 });
 
             -   name:   Run Terraform Plan
@@ -139,7 +139,7 @@ jobs:
             - name:   Configure AWS Credentials
               uses:   aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
               with:   
-                role-to-assume: arn:aws:iam::495599765058:role/terraform-cicd-pipeline-automation-access
+                role-to-assume: arn:aws:iam::${{ secrets.AWS_ACC_ID }}:role/terraform-cicd-pipeline-automation-access
                 aws-region: ${{ env.AWS_REGION }}
 
             -   name:   Init Terraform
