@@ -1,7 +1,5 @@
 /modules/.terraform
 /modules/.*
-/modules/lambda/tests
-/modules/lambda/.*
 /myprojectinfra
-/modules/lambda/tests/
-/modules/tests
+/modules/tests/.*
+/myproject/function.zip
