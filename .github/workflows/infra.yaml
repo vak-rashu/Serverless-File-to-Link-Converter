@@ -39,7 +39,7 @@ jobs:
                     terraform_version: "1.16.1"
 
             -   name:   Run Terraform Init
-                run:    terraform init -backend=false
+                run:    terraform init -backend=false --test-directory=.terraform/dummy_tests
 
             -   name:   Validate and Format Terraform Code
                 run:    |
