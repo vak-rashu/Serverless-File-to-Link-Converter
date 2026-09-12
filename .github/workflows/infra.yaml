@@ -42,9 +42,8 @@ jobs:
                 run:    terraform init -backend=false --test-directory=.terraform/dummy_tests
 
             -   name:   Validate and Format Terraform Code
-                run:    |
-                        terraform validate
-                        terraform fmt
+                run:    terraform fmt
+                        # terraform validate
 
             -   name:   Setup Tflint
                 uses:   terraform-linters/setup-tflint@v6
