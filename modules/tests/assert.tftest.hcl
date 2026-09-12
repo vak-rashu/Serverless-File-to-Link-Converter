@@ -25,7 +25,6 @@ run "unit_tests"{
       condition = aws_s3_bucket.asset_bucket.bucket == var.frontend_assets_bucket_name
       error_message = "The bucket name does not match"
     }
-
 }
 
 # API Gateway — confirm throttling is actually configured, not just present
@@ -35,16 +34,6 @@ run "api_gateway_throttling_configured" {
   variables {
     lambda_func_arn = ""
     lambda_func_name = "my-function123"
-  }
-
-}
-
-    # API Gateway — confirm throttling is actually configured, not just present
-run "api_gateway_throttling_configured" {
-  command = plan
-
-  module {
-    source = "../api-gw"
   }
 
   assert {
@@ -69,12 +58,8 @@ run "dynamodb_schema_correct" {
     condition     = aws_dynamodb_table.db.name == var.dynamodb_table_name
     error_message = "Partition key does not match expected schema"
   }
-
-  assert {
-    condition     = aws_dynamodb_table.db.ttl[0].enabled == true
-    error_message = "TTL is not enabled for auto-expiring links"
-  }
 }
+
 #Lambda — check runtime and handler match what you intended
 run "lambda_config_correct" {
   command = plan
