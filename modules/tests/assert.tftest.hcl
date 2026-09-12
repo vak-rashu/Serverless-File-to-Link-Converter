@@ -75,7 +75,7 @@ run "dynamodb_schema_correct" {
     error_message = "TTL is not enabled for auto-expiring links"
   }
 }
-# Lambda — check runtime and handler match what you intended
+#Lambda — check runtime and handler match what you intended
 run "lambda_config_correct" {
   command = plan
 
