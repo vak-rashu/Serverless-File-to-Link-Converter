@@ -1,8 +1,3 @@
-variables {
-  upload_file_bucket_name = "User_bucket"
-  frontend_assests_bucket_name = "Frontend_app"
-}
-
 mock_provider "aws" {}
 
 run "unit_tests"{
