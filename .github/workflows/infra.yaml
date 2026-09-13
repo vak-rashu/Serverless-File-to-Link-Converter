@@ -57,9 +57,10 @@ jobs:
 
             -   name:   Run Terraform Tests
                 run:    |
+                        cd ./tests
                         terraform init
                         terraform test
-                working-directory: ./tests
+                # working-directory: ./tests
 
     plan:
         runs-on:    ubuntu-latest
