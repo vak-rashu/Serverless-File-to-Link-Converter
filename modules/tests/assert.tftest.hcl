@@ -22,7 +22,7 @@ run "unit_tests"{
     }
 }
 
-# API Gateway — confirm throttling is actually configured, not just present
+#API Gateway — confirm throttling is actually configured, not just present
 run "api_gateway_throttling_configured" {
   command = plan
 
@@ -37,7 +37,7 @@ run "api_gateway_throttling_configured" {
   }
 }
 
-# DynamoDB — confirm the partition key and TTL are set correctly
+#DynamoDB — confirm the partition key and TTL are set correctly
 run "dynamodb_schema_correct" {
   command = plan
 
