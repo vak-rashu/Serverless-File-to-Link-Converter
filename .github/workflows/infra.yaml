@@ -56,7 +56,10 @@ jobs:
                         tflint
 
             -   name:   Run Terraform Tests
-                run:    terraform test
+                run:    |
+                        terraform init
+                        terraform test
+                working-directory: ./tests
 
     plan:
         runs-on:    ubuntu-latest
